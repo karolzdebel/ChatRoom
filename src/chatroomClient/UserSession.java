@@ -92,6 +92,9 @@ public final class UserSession {
             Socket host = new Socket("159.203.32.136",49152);
             inStream = new ObjectInputStream(host.getInputStream());
             outStream = new ObjectOutputStream(host.getOutputStream());
+            
+            System.out.println("Connected to host and established streams successfully.");
+            
         }catch(Exception e){
             System.err.print("Error connecting to host!:"+e.getMessage());
         }
@@ -103,6 +106,9 @@ public final class UserSession {
     
     public void startRegisterSession(){
 
+        //Begin listening to server side messages now that we're in chat
+        connectToHost();
+        
         //Create register GUI Frame
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
@@ -122,11 +128,10 @@ public final class UserSession {
     void startChatSession(){
         
         joined = true;
-        
-        //Begin listening to server side messages now that we're in chat
-        connectToHost();
-        serverActivityListen();
 
+        //Begin listening to server side communication
+        serverActivityListen();
+        
         //Create Chat GUI Frame
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
