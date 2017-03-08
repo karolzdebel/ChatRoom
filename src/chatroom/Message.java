@@ -1,26 +1,35 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package chatroom;
 
 import java.util.Date;
 
 /**
+ * @author Karol Zdebel
  *
- * @author K
+ * Class responsible for storing message information and functionality. 
  */
 public class Message {
     
     private final Date dateSent;
     private final User author;
     private final String content;
+    private final User recipient;
+    private final boolean privMessage;
     
-    public Message(String message, User author){
+    public Message(String message){
+        this.privMessage = false;
+        this.recipient = null;
+        this.dateSent = new Date();
+        this.author = null;
+        this.content = "user: "+message;
+    }
+    
+    public Message(String message, User author, User recipient){
+        this.privMessage = true;
         this.dateSent = new Date();
         this.author = author;
         this.content = author.getNickname()+": "+message;
+        this.recipient = recipient;
     }
     
     public String getContent(){
@@ -31,8 +40,17 @@ public class Message {
         return author;
     }
     
+    public User getRecipient(){
+        return recipient;
+    }
+    
     public Date getDateSent(){
         return dateSent;
     }
+    
+    public boolean isPrivate(){
+        return privMessage;
+    }
+    
     
 }

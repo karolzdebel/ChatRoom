@@ -1,27 +1,38 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package chatroom;
 
+package chatroomClient;
+
+import chatroomClient.UserSession;
 import java.awt.event.WindowEvent;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 /**
- *
- * @author K
+ * @author Karol Zdebel
+ *     
+ * Class responsible for holding all GUI components necessary for
+ * user registration, and responding to user interactions with the GUI
+ * components.
  */
-public class UserRegisterFrame extends javax.swing.JFrame {
 
-    private UserSession userSession;
+final public class UserRegisterFrame extends javax.swing.JFrame {
+
+    private final UserSession userSession;
+    private static final long serialVersionUID = 1;
+
     
     /**
      * Creates new form UserRegisterFrame
+     * @param userSession the user session associated with this object instance
      */
     public UserRegisterFrame(UserSession userSession) {
         this.userSession = userSession;
         initComponents();
+        
+        //Don't close app upon close of window
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+       
+        //Let user attempt to join chat room by pressing enter
+        getRootPane().setDefaultButton(joinButton);
     }
 
     /**
@@ -33,6 +44,7 @@ public class UserRegisterFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup1 = new javax.swing.ButtonGroup();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -43,8 +55,9 @@ public class UserRegisterFrame extends javax.swing.JFrame {
         femaleRadioButton = new javax.swing.JRadioButton();
         joinButton = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Register");
+        setResizable(false);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel1.setText("Register to Join the Chat Room");
@@ -68,8 +81,10 @@ public class UserRegisterFrame extends javax.swing.JFrame {
             }
         });
 
+        buttonGroup1.add(maleRadioButton);
         maleRadioButton.setText("Male");
 
+        buttonGroup1.add(femaleRadioButton);
         femaleRadioButton.setText("Female");
 
         joinButton.setText("Join");
@@ -143,13 +158,20 @@ public class UserRegisterFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_ageTextFieldActionPerformed
 
+    
+    /*
+    * Method called whenever the user presses the join button
+    * signaling he is done filling in his information.
+    */
     private void joinButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_joinButtonActionPerformed
+        
+        //Get data from GUI form
         String err = "";
         String nickname = nicknameTextField.getText();
         String age = ageTextField.getText();
-        System.out.println(age);
-        
         char gender;
+        
+        //Store gender
         if (maleRadioButton.isSelected()){
             gender = 'm';
         }
@@ -167,20 +189,26 @@ public class UserRegisterFrame extends javax.swing.JFrame {
         else if (nickname.length() > 15 || nickname.length() < 5){
             err += "\nPlease provide a nickname that is less is between 5 and 15 characters.";
         }
+        else if (userSession.chatHasNickname(nickname)){
+            err += "\nYour requested nickname has already been taken. Please use another.";
+        }
         
         //check to make sure gender is specified
         if (gender == 'n'){
             err += "\nPlease provide a gender.";
         }
 
+        //Catch exception in case user input invalid age
         try{
+            
             //check for appropriate age
-        if (age.isEmpty()){
-            err += "\nPlease provide an age.";
-        }
-        else if (Integer.parseInt(age) <= 0 || Integer.parseInt(age) > 150){
-            err += "\nPlease provide an age between 1 and 150 years old.";
-        }
+            if (age.isEmpty()){
+                err += "\nPlease provide an age.";
+            }
+            else if (Integer.parseInt(age) <= 0 || Integer.parseInt(age) > 150){
+                err += "\nPlease provide an age between 1 and 150 years old.";
+            }
+        
         }catch(NumberFormatException e){
             err += "\nPlease input a valid age e.g: 32.";
         }
@@ -192,8 +220,9 @@ public class UserRegisterFrame extends javax.swing.JFrame {
             userSession.startChatSession();
            
             //End register session
-            this.setDefaultCloseOperation(this.DISPOSE_ON_CLOSE);
+            this.setDefaultCloseOperation(UserRegisterFrame.DISPOSE_ON_CLOSE);
             this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+            
         }else{
             JOptionPane.showMessageDialog(this,err,"Unspecified Information",JOptionPane.WARNING_MESSAGE);
         }
@@ -202,6 +231,7 @@ public class UserRegisterFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField ageTextField;
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JRadioButton femaleRadioButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

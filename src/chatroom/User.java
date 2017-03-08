@@ -1,19 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package chatroom;
 
 /**
- *
- * @author K
+ * @author Karol Zdebel
+ * 
+ * Class responsible for storing user details and providing access to them.
  */
 public class User {
     
-    private int age;
-    private char gender;
-    private String name;
+    private int age;    //age of user
+    private char gender;    //user gender
+    private String name;    //user's nickname
     
     public User(String name, char gender, int age){
         this.age = age;
@@ -26,9 +23,24 @@ public class User {
     }
     
     public Message createMessage(String content){
-        return new Message(content,this);
+        return new Message(content);
     }
     
+    public int getAge(){
+        return age;
+    }
     
+    public char getGender(){
+        return gender;
+    }
+    
+    public String getStringGender(){
+        if (getGender() == 'm'){
+            return "Male";
+        }
+        else{
+            return "Female";
+        }
+    }
     
 }

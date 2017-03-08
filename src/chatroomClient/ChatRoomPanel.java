@@ -1,28 +1,37 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package chatroom;
+package chatroomClient;
 
+
+
+
+import chatroom.Message;
 import javax.swing.JOptionPane;
 
 /**
- *
- * @author K
+ * @author Karol Zdebel
+
+ * Class responsible for storing all Chat Room GUI elements, and responding to
+ * user interactions with the GUI.
  */
 public class ChatRoomPanel extends javax.swing.JPanel {
 
     private ChatRoomFrame myFrame;
+    private static final long serialVersionUID = 4;
+
     
     /**
      * Creates new form ChatRoomFrame
+     * @param myFrame used to initialize the frame this Panel is stored inside.
      */
     public ChatRoomPanel(ChatRoomFrame myFrame) {
+        
         initComponents();
         this.myFrame = myFrame;
+        
+        //Let user send message by pressing enter
+        myFrame.getRootPane().setDefaultButton(sendMessageButton);
     }
 
+    //Show message in the chat text area
     public void showMessage(Message message){
         if(messageLogTextArea.getText().isEmpty()){
             messageLogTextArea.append(message.getContent());
@@ -46,6 +55,8 @@ public class ChatRoomPanel extends javax.swing.JPanel {
         messageLogScrollPane = new javax.swing.JScrollPane();
         messageLogTextArea = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
+
+        setPreferredSize(new java.awt.Dimension(400, 360));
 
         sendMessageButton.setText("Send");
         sendMessageButton.addActionListener(new java.awt.event.ActionListener() {
@@ -116,10 +127,22 @@ public class ChatRoomPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    public void showNotifcation(String notif){
+        if(messageLogTextArea.getText().isEmpty()){
+            messageLogTextArea.append(notif);
+        }else{
+            messageLogTextArea.append("\n"+notif);
+        }
+    }
+    
+    /*
+    *Method is called when the user presses the send message button.
+    */
     private void sendMessageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendMessageButtonActionPerformed
 
         String userMessage = sendMessageField.getText();
         String err = "";
+
         //Check that the message isn't too long or empty
         if (userMessage.isEmpty()){
             err += "\nCannot send empty message.";
@@ -127,12 +150,16 @@ public class ChatRoomPanel extends javax.swing.JPanel {
         else if (userMessage.length() > 100){
             err += "\nYour message is "+userMessage.length()+" characters long, keep it less than 100 characters. ";
         }
-        
+
+        //If no erros exist then send the message
         if (err.isEmpty()){
             //send message
             sendMessageField.setText("");
-            myFrame.sendMessage(userMessage);
-        }else{
+            myFrame.getUserSession().sendMessage(userMessage);
+        }
+        
+        //If errors exist, prompt user to correct input 
+        else{
             JOptionPane.showMessageDialog(myFrame, err, "Message Error", JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_sendMessageButtonActionPerformed
@@ -142,8 +169,8 @@ public class ChatRoomPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane messageLogScrollPane;
-    private javax.swing.JTextArea messageLogTextArea;
+    javax.swing.JTextArea messageLogTextArea;
     private javax.swing.JButton sendMessageButton;
-    private javax.swing.JTextField sendMessageField;
+    javax.swing.JTextField sendMessageField;
     // End of variables declaration//GEN-END:variables
 }
