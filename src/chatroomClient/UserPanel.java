@@ -49,8 +49,9 @@ final public class UserPanel extends javax.swing.JPanel {
     }
     
     //Display user in UserPanel
-    public void showUser(User user){
-        userListModel.addElement(user.getNickname());
+    public void showUser(User u){
+        user.add(u);
+        userListModel.addElement(u.getNickname());
     }
     
     //Hide the already showing user from UserPanel

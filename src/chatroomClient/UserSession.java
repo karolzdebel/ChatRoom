@@ -50,36 +50,8 @@ public final class UserSession {
         chatUsers.remove(user);
     }
     
-    public void serverActivityListen(){
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try{
-                    UserActivity activity = (UserActivity)inStream.readObject();
-                    
-                    if (activity.isPrivateMessage()){
-                        showMessage(activity.getMessage()
-                                ,activity.getMessage().getAuthor());
-                    }
-                    else if(activity.isPublicMessage()){
-                        showMessage(activity.getMessage());
-                    }
-                    else if(activity.isUserJoin()){
-                        showNotification("User has joined the chat.");
-                        anotherUserJoined(activity.getUser());
-                        showUser(activity.getUser());
-                    }
-                    else if(activity.isUserLeave()){
-                        showNotification("User has joined the chat.");
-                        anotherUserLeft(activity.getUser());
-                        hideUser(activity.getUser());
-                    }
-                    
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
-            }
-        });
+    public ObjectInputStream getInStream(){
+        return inStream;
     }
     
     //Create private chat session
@@ -89,7 +61,7 @@ public final class UserSession {
     
     public final void connectToHost(){
         try{
-            Socket host = new Socket("159.203.32.136",49152);
+            Socket host = new Socket("159.203.32.136",49153);
             inStream = new ObjectInputStream(host.getInputStream());
             outStream = new ObjectOutputStream(host.getOutputStream());
             
@@ -101,13 +73,19 @@ public final class UserSession {
     }
     
     public void sendActivity(UserActivity activity) throws IOException{
+        System.out.println("Sending activity:"+activity.toString());
         outStream.writeObject(activity);
     }
     
     public void startRegisterSession(){
 
         //Begin listening to server side messages now that we're in chat
+        System.out.println("Attempting to connect to host!");
         connectToHost();
+        
+        //Begin listening to server side communication
+        Thread listen = new Thread(new ServerActivityListen(this));
+        listen.start();
         
         //Create register GUI Frame
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -128,9 +106,6 @@ public final class UserSession {
     void startChatSession(){
         
         joined = true;
-
-        //Begin listening to server side communication
-        serverActivityListen();
         
         //Create Chat GUI Frame
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -222,6 +197,7 @@ public final class UserSession {
     public void sendMessage(String input, User recipient){
         Message message = new Message(input,user,recipient);
         UserActivity a = new UserActivity(message);
+        
         try{
             sendActivity(a);
         }catch(Exception e){

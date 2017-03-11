@@ -155,6 +155,7 @@ final public class PrivateChatFrame extends javax.swing.JFrame {
         //If no errors exist send the message, prompt user to fix errors otherwise
         if (err.isEmpty()){
             sendMessageTextField.setText("");
+            showMessage(new Message(userMessage,mySession.getUser(),mySession.getUser()));
             mySession.sendMessage(userMessage,recipient);
         }else{
             JOptionPane.showMessageDialog(this, err, "Message Error", JOptionPane.WARNING_MESSAGE);

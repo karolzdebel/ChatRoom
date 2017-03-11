@@ -2,6 +2,8 @@ package chatroom;
 
 
 import chatroom.*;
+import java.io.Serializable;
+import java.util.ArrayList;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -13,17 +15,29 @@ import chatroom.*;
  *
  * @author K
  */
-public class UserActivity {
+public class UserActivity implements Serializable {
     
     public static final String ACT_PRIV_MESSAGE = "ACT_PRIV_MESSAGE"; 
     public static final String ACT_PUB_MESSAGE = "ACT_PUB_MESSAGE"; 
     public static final String ACT_USER_LEAVE = "ACT_USER_LEAVE"; 
     public static final String ACT_USER_JOIN = "ACT_USER_JOIN";
+    public static final String ACT_USER_LIST = "ACT_USER_LIST";
     
     private final String activityType;
     private final User user;
     private final Message message;
+    private final ArrayList<User> userList;
     
+    /**
+     *
+     * @param userList
+     */
+    public UserActivity(ArrayList<User> userList){
+        this.activityType = ACT_USER_LIST;
+        this.userList = userList;
+        this.message = null;
+        this.user = null;
+    }
     
     public UserActivity(Message message){
         if (message.isPrivate()){
@@ -34,6 +48,7 @@ public class UserActivity {
         }
 
         this.user = null;
+        this.userList = null;
         this.message = message;
         
     }
@@ -53,6 +68,7 @@ public class UserActivity {
         }
         
         this.message = null;
+        this.userList = null;
         this.user = user;
     }
     
@@ -62,6 +78,10 @@ public class UserActivity {
     
     public User getUser(){
         return user;
+    }
+    
+    public ArrayList<User> getUserList(){
+        return userList;
     }
     
     public Message getMessage(){
@@ -82,5 +102,24 @@ public class UserActivity {
     
     public boolean isUserLeave(){
         return activityType.equals(ACT_USER_LEAVE);
+    }
+    
+    public boolean isUserList(){
+        return activityType.equals(ACT_USER_LIST);
+    }
+    
+    public String toString(){
+        String string = activityType;
+        
+        if (activityType.equals(ACT_USER_JOIN) || activityType.equals(ACT_USER_LEAVE)){
+            string+=" user_nick_name:"+user.getNickname()+ "user_age:"+user.getAge();
+        }else if (activityType.equals(ACT_PUB_MESSAGE) || activityType.equals(ACT_PRIV_MESSAGE)){
+            string+=" message:"+message.getContent();
+        }
+        else{
+            string+=" received user list";
+        }
+        
+        return string;
     }
 }
