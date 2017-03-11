@@ -1,8 +1,5 @@
 package chatroomClient;
 
-
-
-
 import chatroom.User;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
@@ -20,6 +17,7 @@ final public class UserPanel extends javax.swing.JPanel {
     private final ChatRoomFrame myFrame;  //Frame associated with this UserPanel
     private final ArrayList<User> user;   //All users in chat
     private final DefaultListModel<String> userListModel; //List of Users in GUI component
+    private final ArrayList<User> permissionList; // permissions to users in chat
     private static final long serialVersionUID = 5;
 
     
@@ -27,9 +25,10 @@ final public class UserPanel extends javax.swing.JPanel {
      * Creates new form UserPanel
      * @param myFrame Frame associated with this JPanel
      * @param users All the users present in the chat
+     * @param permList
      */
     
-    public UserPanel(ChatRoomFrame myFrame, ArrayList<User> users) {
+    public UserPanel(ChatRoomFrame myFrame, ArrayList<User> users, ArrayList<User> permList) {
     
         //Initialize components created in design tab
         initComponents();
@@ -37,6 +36,8 @@ final public class UserPanel extends javax.swing.JPanel {
         this.user = users;
         this.myFrame = myFrame;
        
+        this.permissionList = permList;
+        
         //set list model
         this.userListModel = new DefaultListModel<>(); 
         this.userList.setModel(userListModel);
@@ -46,6 +47,10 @@ final public class UserPanel extends javax.swing.JPanel {
             showUser(u);
         }
         
+    }
+    
+    public void addPermission(User u){
+        permissionList.add(u);
     }
     
     //Display user in UserPanel
@@ -73,9 +78,17 @@ final public class UserPanel extends javax.swing.JPanel {
         messageUserButton = new javax.swing.JButton();
         viewUserProfileButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        givePermissionButton = new javax.swing.JButton();
 
         jScrollPane1.setViewportView(userList);
 
+        givePermissionButton.setText("Permit");
+        givePermissionButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                givePermissionActionPerformed(evt);
+            }
+        });
+        
         messageUserButton.setText("Message");
         messageUserButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -103,7 +116,9 @@ final public class UserPanel extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(messageUserButton, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(viewUserProfileButton, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE))
+                        .addComponent(viewUserProfileButton, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(givePermissionButton,javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
@@ -121,7 +136,8 @@ final public class UserPanel extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(messageUserButton)
-                    .addComponent(viewUserProfileButton, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(viewUserProfileButton, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(givePermissionButton, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -137,6 +153,18 @@ final public class UserPanel extends javax.swing.JPanel {
         return null;
     }
     
+    public void givePermissionActionPerformed(java.awt.event.ActionEvent evt){
+        //act
+        User u = getSelectedUser();
+        if (u == null){
+            JOptionPane.showMessageDialog(this.myFrame,"Please select a user.");
+        }
+        else{
+            this.myFrame.sendPermission(u);
+            JOptionPane.showMessageDialog(this.myFrame,"You gave user "+u.getNickname()+" permission to view your profile!");
+        }
+    }
+    
     //Show user profile details when view profile button pressed
     private void viewUserProfileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewUserProfileButtonActionPerformed
         // TODO add your handling code here:
@@ -147,8 +175,11 @@ final public class UserPanel extends javax.swing.JPanel {
         if (u == null){
             JOptionPane.showMessageDialog(this.myFrame,"Please select a user.");
         }
-        else{
+        else if (permissionList.contains(u)){
             JOptionPane.showMessageDialog(this.myFrame,"USER DETAILS \nNickname: "+u.getNickname()+"\nAge: "+u.getAge()+"\nGender: "+u.getStringGender());
+        }
+        else{
+            JOptionPane.showMessageDialog(this.myFrame,"This user has not granted you permission to view his profile. Try private messaging him.");
         }
     }//GEN-LAST:event_viewUserProfileButtonActionPerformed
 
@@ -177,5 +208,6 @@ final public class UserPanel extends javax.swing.JPanel {
     private javax.swing.JButton messageUserButton;
     private javax.swing.JList<String> userList;
     private javax.swing.JButton viewUserProfileButton;
+    private javax.swing.JButton givePermissionButton;
     // End of variables declaration//GEN-END:variables
 }

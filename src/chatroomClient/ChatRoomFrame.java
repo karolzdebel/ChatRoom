@@ -1,8 +1,5 @@
 package chatroomClient;
 
-
-
-
 import chatroom.*;
 import java.awt.ComponentOrientation;
 import java.awt.FlowLayout;
@@ -36,7 +33,7 @@ final public class ChatRoomFrame extends javax.swing.JFrame {
         //Initialize instance variables
         this.userSession = userSession;
         this.chatRoomPanel = new ChatRoomPanel(this);
-        this.userPanel = new UserPanel(this,userSession.getAllChatUsers());
+        this.userPanel = new UserPanel(this,userSession.getAllChatUsers(),userSession.getPermissionList());
         
         //Add Panels to Frame
         this.add(chatRoomPanel);
@@ -70,6 +67,10 @@ final public class ChatRoomFrame extends javax.swing.JFrame {
         chatRoomPanel.showNotifcation(notif);
     }
     
+    public void sendPermission(User u){
+        userSession.givePermission(u);
+    }
+    
     //Get user session instance variable
     public UserSession getUserSession(){
         return this.userSession;
@@ -82,6 +83,11 @@ final public class ChatRoomFrame extends javax.swing.JFrame {
     //Display a particular user to the user log
     public void showUser(User user){
         userPanel.showUser(user);
+    }
+    
+    //Give permission to user
+    public void givePermission(User user){
+        userPanel.addPermission(user);
     }
     
     //Return chat room panel instance variable

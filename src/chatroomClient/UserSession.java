@@ -1,8 +1,5 @@
 package chatroomClient;
 
-
-
-
 import chatroom.Message;
 import chatroom.User;
 import chatroom.UserActivity;
@@ -29,6 +26,7 @@ public final class UserSession {
     private ObjectOutputStream outStream;
     private ObjectInputStream inStream;
     private ArrayList<User> chatUsers;
+    private ArrayList<User> permissionList;
     
     public static void main(String[] args){
         UserSession userSession = new UserSession();
@@ -38,6 +36,7 @@ public final class UserSession {
     public UserSession(){
         privateChats = new Hashtable<>();
         chatUsers = new ArrayList<>(); 
+        permissionList = new ArrayList<>();
         this.joined = false;
         startRegisterSession();
     }    
@@ -175,6 +174,26 @@ public final class UserSession {
     public void addUser(String nickname, int age, char gender){
         this.user = new User(nickname,gender,age);
         UserActivity a = new UserActivity(getUser(),UserActivity.ACT_USER_JOIN);
+        try{
+            sendActivity(a);
+        }catch(Exception e){
+            System.err.print("Could not send activity to host: "+e.getMessage());
+        }
+    }
+    
+    public void gotPermission(User from){
+        permissionList.add(from);
+        chatRoomFrame.givePermission(from);
+    }
+    
+    public ArrayList<User> getPermissionList(){
+        return this.permissionList;
+    }
+    
+    
+    //Give permission to a specific user
+    public void givePermission(User to){
+        UserActivity a = new UserActivity(this.getUser(),to);
         try{
             sendActivity(a);
         }catch(Exception e){
